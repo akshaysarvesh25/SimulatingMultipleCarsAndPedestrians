@@ -6,8 +6,8 @@ open_system(new_system('MultipleCarsPedestrians'));
 object_name = 'Objects{';
 
 Num_Cars = 2;
-Num_Peds = 0;
-Num_Avs = 0;
+Num_Peds = 3;
+Num_Avs = 1;
 
 
 %%%%Create cars%%%
@@ -37,7 +37,8 @@ ped_name1 = strcat(ped_name,string(c-Num_Cars));
 object_name1 = strcat(object_name,string(c),'}');
 add_block(add_ped,ped_name1);
 set_param(ped_name1,'MaskValueString',object_name1);
-%Objects{c} = initialize_pedestrian_objs(c);
+set_param(ped_name1,'LinkStatus','inactive');
+Objects{c} = initialize_pedestrian_objs(c);
 end
 
 %%Add relative position for Avs to get a count of total number of objects%%%
@@ -53,6 +54,8 @@ av_name1 = strcat(av_name,string(c-Num_Peds_relative));
 object_name1 = strcat(object_name,string(c),'}');
 add_block(add_av,av_name1);
 set_param(av_name1,'MaskValueString',object_name1);
+set_param(av_name1,'LinkStatus','inactive');
+Objects{c} = initialize_av_objs(c);
 end
 
 toc()
