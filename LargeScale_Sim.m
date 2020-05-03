@@ -2,12 +2,13 @@ clc;clear all;close all;
 tic()
 
 open_system(new_system('MultipleCarsPedestrians'));
+system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
 
 Num_Cars = 2;
 Num_Peds = 3;
-Num_Avs = 1;
+Num_Avs = 13;
 
 
 %%%%Create cars%%%
@@ -20,6 +21,16 @@ object_name1 = strcat(object_name,string(c),'}');
 add_block(add_car,car_name1);
 set_param(car_name1,'MaskValueString',object_name1);
 set_param(car_name1,'LinkStatus','inactive');
+port = get_param(car_name1,'PortHandles');
+add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/vxd_',string(c)));
+add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/delta_f',string(c)));
+set_param(strcat('MultipleCarsPedestrians/vxd_',string(c)),'Value',string(rand(5,1,1)*10));
+set_param(strcat('MultipleCarsPedestrians/delta_f',string(c)),'Value',string(randi([-5,5],1,1)));
+Ports_vxd = get_param(strcat('MultipleCarsPedestrians/vxd_',string(c)),'PortHandles');
+Ports_deltaf = get_param(strcat('MultipleCarsPedestrians/delta_f',string(c)),'PortHandles');
+car_port = get_param(car_name1,'PortHandles');
+add_line(system_name,Ports_vxd.Outport,car_port.Inport(1));
+add_line(system_name,Ports_deltaf.Outport,car_port.Inport(2));
 Objects{c} = initialize_car_objs(c);
 end
 
