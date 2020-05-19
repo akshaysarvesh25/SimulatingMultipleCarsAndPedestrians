@@ -9,8 +9,20 @@ object_name = 'Objects{';
 Num_Cars = 2;
 Num_Peds = 2;
 Num_Avs = 2;
-Num_Acc_cars = 2;
+Num_Acc_cars = 15;
 
+
+if((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>25)
+    Lanes = [0 1 2 3 4 5];
+elseif((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>15 & (Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2<25)
+    Lanes = [0 1 2 3 4];
+elseif((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>10 & (Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2<15)
+    Lanes = [0 1 2 3];
+elseif((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>5 & (Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2<10)
+    Lanes = [0 1 2];
+else
+    Lanes = [0 1];          
+end
 
 %%%%Create cars%%%
 add_car = 'LargeScaleSimLib/car';
@@ -27,7 +39,7 @@ set_param(car_name1,'LinkStatus','inactive');
 %Set object name
 set_param(car_name1,'MaskValueString',object_name1);
 
-
+%Select car lane randomly from the available lanes
 
 %add input blocks
 add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/vxd_',string(c)));
@@ -153,11 +165,17 @@ set_param(acc_name1,'LinkStatus','inactive');
 set_param(acc_name1,'MaskValueString',object_name1);
 
 %add input blocks
-add_block('Simulink/Signal Routing/Mux',strcat('MultipleCarsPedestrians/acc_car_mux_',string(c)));
+add_block('simulink/Signal Routing/Mux',strcat('MultipleCarsPedestrians/acc_car_mux_',string(c)));
+%set_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(c)),'Inputs',string(8));
 
 %get port output and input handles
-Ports_
-    
+Ports_mux = get_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(c)),'PortHandles');
+acc_car_port = get_param(acc_name1,'PortHandles');
+
+%add arrows to connect
+add_line(system_name,Ports_mux.Outport,acc_car_port.Inport(1));
+
+Objects{c} = initialize_acc_car_objs(c);
 end
 
 %%%%Create Auto-Cruise control cars%%%%
@@ -167,7 +185,7 @@ end
 % add_block('LargeScaleSimLib/car_acc','MultipleCarsPedestrians/acc_car1');
 % set_param('MultipleCarsPedestrians/acc_car1','LinkStatus','inactive');
 % set_param('MultipleCarsPedestrians/acc_car1','MaskValueString','Objects{7}');
- Objects{7} = initialize_acc_car_objs(7);
+% Objects{7} = initialize_acc_car_objs(7);
 
 toc()
 
