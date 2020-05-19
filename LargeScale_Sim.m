@@ -188,6 +188,9 @@ add_line(system_name,Ports_mux.Outport,acc_car_port.Inport(1));
 Objects{c} = initialize_acc_car_objs(c);
 end
 
+
+%Change the number of inputs to the MUX based on the number of cars in the
+%lane
 for n = 1:length(Lanes)
    
     acc_cars_indices = find(Lane_acc == Lanes(n))
@@ -197,6 +200,22 @@ for n = 1:length(Lanes)
     
     for j = 1:length(acc_cars_indices)
         set_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(j+Num_avs_relative+1)),'Inputs',string(total_inputs_mux));
+        mux_ph(j) = get_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(j+Num_avs_relative+1)),'PortHandles');
+    end
+    
+%     counter_1 = 1;
+    for j1 = 1:length(cars_indices)
+        ph_car = get_param(strcat('MultipleCarsPedestrians/Car',string(j1)),'PortHandles');
+        
+%         for j2 = 1:length(acc_cars_indices)
+%             add_line(system_name,ph.Outport(1),mux_ph(j2).Inport(counter_1));
+%             add_line(system_name,ph.Outport(2),mux_ph(j2).Inport(counter_1+1));
+%             counter_1 = counter_1+2;
+%         end
+    end
+    
+    for j2 = 1:length(acc_cars_indices)
+       ph_acc_car = get_param(strcat('MultipleCarsPedestrians/car_acc',string(j1)),'PortHandles');
     end
     
 end
