@@ -6,23 +6,28 @@ system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
 
-Num_Cars = 200;
-Num_Peds = 30;
-Num_Avs = 10;
+Num_Cars = 2;
+Num_Peds = 2;
+Num_Avs = 2;
+Num_Acc_cars = 2;
 
 
 %%%%Create cars%%%
-add_car = 'genericAgentLib/car';
+add_car = 'LargeScaleSimLib/car';
 car_name = 'MultipleCarsPedestrians/Car';
 for c = 1:Num_Cars
 
 car_name1 = strcat(car_name,string(c));
 object_name1 = strcat(object_name,string(c),'}');
 add_block(add_car,car_name1);
-set_param(car_name1,'MaskValueString',object_name1);
 
 %Make Library link status as inactive
 set_param(car_name1,'LinkStatus','inactive');
+
+%Set object name
+set_param(car_name1,'MaskValueString',object_name1);
+
+
 
 %add input blocks
 add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/vxd_',string(c)));
@@ -49,7 +54,7 @@ end
 Num_Peds_relative = Num_Peds + Num_Cars;
 
 %%%%Create Pedestrians%%%
-add_ped = 'genericAgentLib/ped1';
+add_ped = 'LargeScaleSimLib/ped1';
 ped_name = 'MultipleCarsPedestrians/ped';
 for c = Num_Cars+1:Num_Peds_relative
 
@@ -57,10 +62,12 @@ for c = Num_Cars+1:Num_Peds_relative
 ped_name1 = strcat(ped_name,string(c-Num_Cars));
 object_name1 = strcat(object_name,string(c),'}');
 add_block(add_ped,ped_name1);
-set_param(ped_name1,'MaskValueString',object_name1);
 
 %Make Library link status as inactive
 set_param(ped_name1,'LinkStatus','inactive');
+
+%Set object name
+set_param(ped_name1,'MaskValueString',object_name1);
 
 %add input blocks
 add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/v_d',string(c)));
@@ -86,7 +93,7 @@ end
 Num_avs_relative = Num_Peds_relative+Num_Avs;
 
 %%%%Create Avs%%%
-add_av = 'genericAgentLib/av_simple';
+add_av = 'LargeScaleSimLib/av_simple';
 av_name = 'MultipleCarsPedestrians/av';
 for c = Num_Peds_relative+1:Num_avs_relative
 
@@ -94,10 +101,12 @@ for c = Num_Peds_relative+1:Num_avs_relative
 av_name1 = strcat(av_name,string(c-Num_Peds_relative));
 object_name1 = strcat(object_name,string(c),'}');
 add_block(add_av,av_name1);
-set_param(av_name1,'MaskValueString',object_name1);
 
 %Make Library link status as inactive
 set_param(av_name1,'LinkStatus','inactive');
+
+%Set object name
+set_param(av_name1,'MaskValueString',object_name1);
 
 %add input blocks
 add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/av_v_d',string(c)));
@@ -123,9 +132,46 @@ add_line(system_name,Ports_av_v_z.Outport,av_port.Inport(3));
 Objects{c} = initialize_av_objs(c);
 end
 
+
+%%Add relative position for Avs to get a count of total number of objects%%%
+Num_acc_cars_relative = Num_avs_relative + Num_Acc_cars;
+
+%%%%Create Acc cars%%%
+add_acc = 'LargeScaleSimLib/car_acc';
+acc_name = 'MultipleCarsPedestrians/car_acc';
+for c = Num_avs_relative+1:Num_acc_cars_relative
+   
+%Starting the number of acc_cars from 1, but not changing it to keep the value of object different
+acc_name1 = strcat(acc_name,string(c-Num_avs_relative));
+object_name1 = strcat(object_name,string(c),'}');
+add_block(add_acc,acc_name1);
+
+%Make Library link status as inactive
+set_param(acc_name1,'LinkStatus','inactive');
+
+%Set object name
+set_param(acc_name1,'MaskValueString',object_name1);
+
+%add input blocks
+add_block('Simulink/Signal Routing/Mux',strcat('MultipleCarsPedestrians/acc_car_mux_',string(c)));
+
+%get port output and input handles
+Ports_
+    
+end
+
+%%%%Create Auto-Cruise control cars%%%%
+% add_acc = 'LargeScaleSimLib/car_acc';
+% acc_car_name = 'MultipleCarsPedestrians/car_acc';
+% 
+% add_block('LargeScaleSimLib/car_acc','MultipleCarsPedestrians/acc_car1');
+% set_param('MultipleCarsPedestrians/acc_car1','LinkStatus','inactive');
+% set_param('MultipleCarsPedestrians/acc_car1','MaskValueString','Objects{7}');
+ Objects{7} = initialize_acc_car_objs(7);
+
 toc()
 
 tic()
-sim(system_name,100)
+%sim(system_name,100)
 toc();
 
