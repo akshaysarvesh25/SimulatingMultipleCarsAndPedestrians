@@ -27,6 +27,7 @@ end
 %%%%Create cars%%%
 add_car = 'LargeScaleSimLib/car';
 car_name = 'MultipleCarsPedestrians/Car';
+lane_counter_car = 1;
 for c = 1:Num_Cars
 
 car_name1 = strcat(car_name,string(c));
@@ -40,6 +41,9 @@ set_param(car_name1,'LinkStatus','inactive');
 set_param(car_name1,'MaskValueString',object_name1);
 
 %Select car lane randomly from the available lanes
+pos = randi(length(Lanes));
+Lane_car(lane_counter_car) = Lanes(pos);
+lane_counter_car = lane_counter_car + 1;
 
 %add input blocks
 add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/vxd_',string(c)));
@@ -151,6 +155,7 @@ Num_acc_cars_relative = Num_avs_relative + Num_Acc_cars;
 %%%%Create Acc cars%%%
 add_acc = 'LargeScaleSimLib/car_acc';
 acc_name = 'MultipleCarsPedestrians/car_acc';
+lane_counter_acc = 1;
 for c = Num_avs_relative+1:Num_acc_cars_relative
    
 %Starting the number of acc_cars from 1, but not changing it to keep the value of object different
@@ -163,6 +168,11 @@ set_param(acc_name1,'LinkStatus','inactive');
 
 %Set object name
 set_param(acc_name1,'MaskValueString',object_name1);
+
+%Select car lane randomly from the available lanes
+pos = randi(length(Lanes));
+Lane_acc(lane_counter_acc) = Lanes(pos);
+lane_counter_acc = lane_counter_acc+1;
 
 %add input blocks
 add_block('simulink/Signal Routing/Mux',strcat('MultipleCarsPedestrians/acc_car_mux_',string(c)));
@@ -178,14 +188,20 @@ add_line(system_name,Ports_mux.Outport,acc_car_port.Inport(1));
 Objects{c} = initialize_acc_car_objs(c);
 end
 
-%%%%Create Auto-Cruise control cars%%%%
-% add_acc = 'LargeScaleSimLib/car_acc';
-% acc_car_name = 'MultipleCarsPedestrians/car_acc';
-% 
-% add_block('LargeScaleSimLib/car_acc','MultipleCarsPedestrians/acc_car1');
-% set_param('MultipleCarsPedestrians/acc_car1','LinkStatus','inactive');
-% set_param('MultipleCarsPedestrians/acc_car1','MaskValueString','Objects{7}');
-% Objects{7} = initialize_acc_car_objs(7);
+for n = 1:length(Lanes)
+   
+    acc_cars_indices = find(Lane_acc == Lanes(n))
+    cars_indices = find(Lane_car == Lanes(n))
+    
+    total_inputs_mux = (length(acc_cars_indices)+length(cars_indices))*2
+    
+    for j = 1:length(acc_cars_indices)
+        set_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(j+Num_avs_relative+1)),'Inputs',string(total_inputs_mux));
+    end
+    
+end
+
+
 
 toc()
 
