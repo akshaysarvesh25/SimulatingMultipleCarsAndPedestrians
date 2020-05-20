@@ -6,10 +6,10 @@ system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
 
-Num_Cars = 12;
+Num_Cars = 4;
 Num_Peds = 2;
 Num_Avs = 2;
-Num_Acc_cars =20;
+Num_Acc_cars =4;
 
 
 if((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>25)
@@ -218,6 +218,23 @@ for n = 1:length(Lanes)
             
             counter_1 = counter_1+2
 
+        end
+    end
+    
+    temp = counter_1;
+    
+    if(length(acc_cars_indices)>0)
+        counter_2 = temp;
+        for j3 = 1:length(acc_cars_indices)
+            ph_acc_car = get_param(strcat('MultipleCarsPedestrians/car_acc',string(acc_cars_indices(j))),'PortHandles');
+            
+            for j4 = 1:length(acc_cars_indices)
+                add_line(system_name,ph_acc_car.Outport(1),mux_ph(j4).Inport(counter_2));
+                add_line(system_name,ph_acc_car.Outport(2),mux_ph(j4).Inport(counter_2+1));
+            end
+            
+            counter_2 = counter_2+2
+            
         end
     end
     
