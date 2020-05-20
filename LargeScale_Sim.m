@@ -190,11 +190,13 @@ end
 
 
 %Change the number of inputs to the MUX based on the number of cars in the
-%lane
+%lane 
+% - OMG! Complicated logic :D
 for n = 1:length(Lanes)
    
     acc_cars_indices = find(Lane_acc == Lanes(n))
     cars_indices = find(Lane_car == Lanes(n))
+    counter_1 = 1;
     
     total_inputs_mux = (length(acc_cars_indices)+length(cars_indices))*2
     
@@ -223,10 +225,11 @@ for n = 1:length(Lanes)
     
     temp = counter_1;
     
+    %If there are more than one acc car in the lane
     if(length(acc_cars_indices)>0)
         counter_2 = temp;
         for j3 = 1:length(acc_cars_indices)
-            ph_acc_car = get_param(strcat('MultipleCarsPedestrians/car_acc',string(acc_cars_indices(j))),'PortHandles');
+            ph_acc_car = get_param(strcat('MultipleCarsPedestrians/car_acc',string(acc_cars_indices(j3))),'PortHandles');
             
             for j4 = 1:length(acc_cars_indices)
                 add_line(system_name,ph_acc_car.Outport(1),mux_ph(j4).Inport(counter_2));
@@ -249,6 +252,6 @@ end
 toc()
 
 tic()
-%sim(system_name,100)
+sim(system_name,100)
 toc();
 
