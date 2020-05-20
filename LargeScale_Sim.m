@@ -6,10 +6,10 @@ system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
 
-Num_Cars = 2;
+Num_Cars = 12;
 Num_Peds = 2;
 Num_Avs = 2;
-Num_Acc_cars = 15;
+Num_Acc_cars =20;
 
 
 if((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>25)
@@ -199,24 +199,31 @@ for n = 1:length(Lanes)
     total_inputs_mux = (length(acc_cars_indices)+length(cars_indices))*2
     
     for j = 1:length(acc_cars_indices)
-        set_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(j+Num_avs_relative+1)),'Inputs',string(total_inputs_mux));
-        mux_ph(j) = get_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(j+Num_avs_relative+1)),'PortHandles');
+        set_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(acc_cars_indices(j)+Num_avs_relative)),'Inputs',string(total_inputs_mux));
+        mux_ph(j) = get_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(acc_cars_indices(j)+Num_avs_relative)),'PortHandles');
     end
     
-%     counter_1 = 1;
-    for j1 = 1:length(cars_indices)
-        ph_car = get_param(strcat('MultipleCarsPedestrians/Car',string(j1)),'PortHandles');
-        
-%         for j2 = 1:length(acc_cars_indices)
-%             add_line(system_name,ph.Outport(1),mux_ph(j2).Inport(counter_1));
-%             add_line(system_name,ph.Outport(2),mux_ph(j2).Inport(counter_1+1));
-%             counter_1 = counter_1+2;
-%         end
+    %If there are more than one normal car in the lane
+    if(length(cars_indices)>0)
+        counter_1 = 1;
+        for j1 = 1:length(cars_indices)
+            ph_car = get_param(strcat('MultipleCarsPedestrians/Car',string(cars_indices(j1))),'PortHandles');
+
+
+
+            for j2 = 1:length(acc_cars_indices)
+                add_line(system_name,ph_car.Outport(1),mux_ph(j2).Inport(counter_1));
+                add_line(system_name,ph_car.Outport(2),mux_ph(j2).Inport(counter_1+1));
+            end
+            
+            counter_1 = counter_1+2
+
+        end
     end
     
-    for j2 = 1:length(acc_cars_indices)
-       ph_acc_car = get_param(strcat('MultipleCarsPedestrians/car_acc',string(j1)),'PortHandles');
-    end
+%     for j4 = 1:length(acc_cars_indices)
+%        ph_acc_car = get_param(strcat('MultipleCarsPedestrians/car_acc',string(j1)),'PortHandles');
+%     end
     
 end
 
