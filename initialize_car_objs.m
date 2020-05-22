@@ -1,4 +1,4 @@
-function  t = initialize_car_objs(c)
+function  t = initialize_car_objs(c,lane_info)
 persistent sensors
 Objects{c}.NameStrh = convertStringsToChars(strcat('Car',string(c)));
 Objects{c}.isTeamMember = 1;
@@ -11,8 +11,8 @@ Objects{c}.ax0 = 0;
 Objects{c}.vy0 = 0;
 Objects{c}.omega0 = 0;
 Objects{c}.psi0 = 0 * pi/180;
-Objects{c}.X0 = -20;
-Objects{c}.Y0 = -25;
+Objects{c}.X0 = c*100;%-20;
+Objects{c}.Y0 = lane_info*10;%-25
 Objects{c}.init = [Objects{c}.vx0 Objects{c}.ax0 Objects{c}.vy0 Objects{c}.omega0 Objects{c}.psi0 Objects{c}.X0 Objects{c}.Y0 0 0 0]';
 
 Objects{c}.Calpha_f = 60000; % N/rad

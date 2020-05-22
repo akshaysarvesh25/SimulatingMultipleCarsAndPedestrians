@@ -9,9 +9,9 @@ object_name = 'Objects{';
 Num_Cars = 4;
 Num_Peds = 2;
 Num_Avs = 2;
-Num_Acc_cars =4;
+Num_Acc_cars = 4;
 
-
+%Create lanes depending on the number of vehicles that are present
 if((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>25)
     Lanes = [0 1 2 3 4 5];
 elseif((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>15 & (Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2<25)
@@ -41,8 +41,8 @@ set_param(car_name1,'LinkStatus','inactive');
 set_param(car_name1,'MaskValueString',object_name1);
 
 %Select car lane randomly from the available lanes
-pos = randi(length(Lanes));
-Lane_car(lane_counter_car) = Lanes(pos);
+%pos = randi(length(Lanes));
+Lane_car(lane_counter_car) = Lanes(mod(c,length(Lanes))+1);
 lane_counter_car = lane_counter_car + 1;
 
 %add input blocks
@@ -61,7 +61,7 @@ add_line(system_name,Ports_vxd.Outport,car_port.Inport(1));
 add_line(system_name,Ports_deltaf.Outport,car_port.Inport(2));
 
 %Initialize objects
-Objects{c} = initialize_car_objs(c);
+Objects{c} = initialize_car_objs(c,Lanes(mod(c,length(Lanes))+1));
 
 end
 
@@ -170,8 +170,8 @@ set_param(acc_name1,'LinkStatus','inactive');
 set_param(acc_name1,'MaskValueString',object_name1);
 
 %Select car lane randomly from the available lanes
-pos = randi(length(Lanes));
-Lane_acc(lane_counter_acc) = Lanes(pos);
+%pos = randi(length(Lanes));
+Lane_acc(lane_counter_acc) = Lanes(mod(c,length(Lanes))+1);
 lane_counter_acc = lane_counter_acc+1;
 
 %add input blocks
@@ -185,7 +185,7 @@ acc_car_port = get_param(acc_name1,'PortHandles');
 %add arrows to connect
 add_line(system_name,Ports_mux.Outport,acc_car_port.Inport(1));
 
-Objects{c} = initialize_acc_car_objs(c);
+Objects{c} = initialize_acc_car_objs(c,Lanes(mod(c,length(Lanes))+1));
 end
 
 
@@ -252,6 +252,6 @@ end
 toc()
 
 tic()
-sim(system_name,100)
+output = sim(system_name,100)
 toc();
-
+output.Car1.Data
