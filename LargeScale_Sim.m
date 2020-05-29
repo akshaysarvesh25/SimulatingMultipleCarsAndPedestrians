@@ -48,7 +48,14 @@ lane_counter_car = lane_counter_car + 1;
 %add input blocks
 add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/vxd_',string(c)));
 add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/delta_f',string(c)));
-set_param(strcat('MultipleCarsPedestrians/vxd_',string(c)),'Value',string(90/(Num_Cars+Num_Acc_cars-c)));
+
+%increase the velocity
+%set_param(strcat('MultipleCarsPedestrians/vxd_',string(c)),'Value',string(90/(Num_Cars+Num_Acc_cars-c)));
+
+%decrease the velocity
+set_param(strcat('MultipleCarsPedestrians/vxd_',string(c)),'Value',string(90/(c)));
+
+
 set_param(strcat('MultipleCarsPedestrians/delta_f',string(c)),'Value',string(0));
 
 %get output port handles
