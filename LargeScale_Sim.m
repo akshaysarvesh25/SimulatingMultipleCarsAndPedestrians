@@ -248,25 +248,25 @@ for n = 1:length(Lanes)
         end
     end
     
-%     for j4 = 1:length(acc_cars_indices)
-%        ph_acc_car = get_param(strcat('MultipleCarsPedestrians/car_acc',string(j1)),'PortHandles');
-%     end
     
 end
 
 
 
 toc()
+%%%Done creating the system
+
 
 tic()
+%Start the system / Simulate the system
 output = sim(system_name,100)
 toc();
 
 
 for lane_ = 1:length(Lanes)
    
-    acc_cars_indices = find(Lane_acc == Lanes(lane_))+Num_avs_relative
-    cars_indices = find(Lane_car == Lanes(lane_))
+    acc_cars_indices = find(Lane_acc == Lanes(lane_))+Num_avs_relative;
+    cars_indices = find(Lane_car == Lanes(lane_));
     
     for node_ = 1:length(acc_cars_indices)
         
