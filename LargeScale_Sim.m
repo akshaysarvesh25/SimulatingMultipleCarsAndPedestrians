@@ -6,10 +6,10 @@ system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
 
-Num_Cars = 3;
-Num_Peds = 0;
-Num_Avs = 0;
-Num_Acc_cars = 1;
+Num_Cars = 4;
+Num_Peds = 2;
+Num_Avs = 2;
+Num_Acc_cars = 4;
 
 %Create lanes depending on the number of vehicles that are present
 if((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>25)
@@ -48,8 +48,8 @@ lane_counter_car = lane_counter_car + 1;
 %add input blocks
 add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/vxd_',string(c)));
 add_block('simulink/Commonly Used Blocks/Constant',strcat('MultipleCarsPedestrians/delta_f',string(c)));
-set_param(strcat('MultipleCarsPedestrians/vxd_',string(c)),'Value',string(rand(5,1,1)*10));
-set_param(strcat('MultipleCarsPedestrians/delta_f',string(c)),'Value',string(randi([-5,5],1,1)));
+set_param(strcat('MultipleCarsPedestrians/vxd_',string(c)),'Value',string(90/(Num_Cars+Num_Acc_cars-c)));
+set_param(strcat('MultipleCarsPedestrians/delta_f',string(c)),'Value',string(0));
 
 %get output port handles
 Ports_vxd = get_param(strcat('MultipleCarsPedestrians/vxd_',string(c)),'PortHandles');
@@ -61,7 +61,7 @@ add_line(system_name,Ports_vxd.Outport,car_port.Inport(1));
 add_line(system_name,Ports_deltaf.Outport,car_port.Inport(2));
 
 %Initialize objects
-Objects{c} = initialize_car_objs(c,Lanes(mod(c,length(Lanes))+1));
+Objects{c} = initialize_car_objs(c,Lanes(mod(c,length(Lanes))+1),(Num_Cars+Num_Acc_cars));
 
 end
 
@@ -185,7 +185,7 @@ acc_car_port = get_param(acc_name1,'PortHandles');
 %add arrows to connect
 add_line(system_name,Ports_mux.Outport,acc_car_port.Inport(1));
 
-Objects{c} = initialize_acc_car_objs(c,Lanes(mod(c,length(Lanes))+1));
+Objects{c} = initialize_acc_car_objs(c,Lanes(mod(c,length(Lanes))+1),(Num_Cars+Num_Acc_cars));
 end
 
 
@@ -281,11 +281,13 @@ figure
 plot(G)
 title('Simulation graph')
 
+%Plotting routine XY plot
 car_string = 'output.Car';
 x_data_string = '.Data(:,1)';
 y_data_string = '.Data(:,2)';
 figure;
 for plot_count = 1:(Num_Cars)
+    
     
     ts = eval([car_string,num2str(plot_count),x_data_string]);
     ds = eval([car_string,num2str(plot_count),y_data_string]);
@@ -297,8 +299,22 @@ for plot_count = 1:(Num_Cars)
   
 end
 
+car_string = 'output.Car_acc_';
+for plot_count = Num_avs_relative+1:Num_acc_cars_relative
+    
+    ts = eval([car_string,num2str(plot_count),x_data_string]);
+    ds = eval([car_string,num2str(plot_count),y_data_string]);
+    plot((ts),(ds));
+    xlabel('x');
+    ylabel('y');
+    title('Plot of X&Y');
+    hold on
+    
+end
+%End XY plot
 
-%Plotting routine Vx plot
+
+%Plotting routine X plot
 car_string = 'output.Car';
 data_string = '.Data(:,1)';
 time_string = '.Time(:,1)';
@@ -315,8 +331,23 @@ for plot_count = 1:(Num_Cars)
   
 end
 
+car_string = 'output.Car_acc_';
+for plot_count = Num_avs_relative+1:Num_acc_cars_relative
+    
+    ts = eval([car_string,num2str(plot_count),time_string]);
+    ds = eval([car_string,num2str(plot_count),data_string]);
+    plot((ts),(ds));
+    xlabel('Time');
+    ylabel('X');
+    title('Plot of X vs time');
+    hold on
+  
+end
+%End X plot
 
-%Plotting routine Vy plot
+
+
+%Plotting routine Y plot
 car_string = 'output.Car';
 data_string = '.Data(:,2)';
 time_string = '.Time(:,1)';
@@ -333,8 +364,21 @@ for plot_count = 1:(Num_Cars)
   
 end
 
+car_string = 'output.Car_acc_';
+for plot_count = Num_avs_relative+1:Num_acc_cars_relative
+    
+    ts = eval([car_string,num2str(plot_count),time_string]);
+    ds = eval([car_string,num2str(plot_count),data_string]);
+    plot((ts),(ds));
+    xlabel('Time');
+    ylabel('Y');
+    title('Plot of Y vs time');
+    hold on
+  
+end
+%%%%%End Y plot
 
-%Plotting routine X plot
+%Plotting routine Vx plot
 car_string = 'output.Car';
 data_string = '.Data(:,3)';
 time_string = '.Time(:,1)';
@@ -351,7 +395,23 @@ for plot_count = 1:(Num_Cars)
   
 end
 
-%Plotting routine Y plot
+car_string = 'output.Car_acc_';
+for plot_count = Num_avs_relative+1:Num_acc_cars_relative
+    
+    ts = eval([car_string,num2str(plot_count),time_string]);
+    ds = eval([car_string,num2str(plot_count),data_string]);
+    plot((ts),(ds));
+    xlabel('Time');
+    ylabel('Vx');
+    title('Plot of Vx vs time');
+    hold on
+  
+end
+
+%%%End Vx plot
+
+
+%Plotting routine Vy plot
 car_string = 'output.Car';
 data_string = '.Data(:,4)';
 time_string = '.Time(:,1)';
@@ -368,13 +428,17 @@ for plot_count = 1:(Num_Cars)
   
 end
 
-output.Car1.Data;
-
-
-
-% figure
-% plot(output.Car1.Time(:,1),output.Car1.Data(:,1),output.Car2.Time(:,1),output.Car2.Data(:,1));
-% figure
-% plot(output.Car1.Time(:,1),output.Car1.Data(:,2),output.Car2.Time(:,1),output.Car2.Data(:,2))
-
+car_string = 'output.Car_acc_';
+for plot_count = Num_avs_relative+1:Num_acc_cars_relative
+    
+    ts = eval([car_string,num2str(plot_count),time_string]);
+    ds = eval([car_string,num2str(plot_count),data_string]);
+    plot((ts),(ds));
+    xlabel('Time');
+    ylabel('Vy');
+    title('Plot of Vy vs time');
+    hold on
+  
+end
+%%%End Vy plot
 
