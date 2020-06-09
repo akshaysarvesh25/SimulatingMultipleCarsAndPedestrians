@@ -6,10 +6,10 @@ system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
 
-Num_Cars = 4;
+Num_Cars = 1;
 Num_Peds = 2;
 Num_Avs = 2;
-Num_Acc_cars = 4;
+Num_Acc_cars = 14;
 
 %Create lanes depending on the number of vehicles that are present
 if((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>25)
@@ -68,7 +68,7 @@ add_line(system_name,Ports_vxd.Outport,car_port.Inport(1));
 add_line(system_name,Ports_deltaf.Outport,car_port.Inport(2));
 
 %Initialize objects
-Objects{c} = initialize_car_objs(c,Lanes(mod(c,length(Lanes))+1),(Num_Cars+Num_Acc_cars));
+Objects{c} = initialize_car_objs(c,Lanes(mod(c,length(Lanes))+1),(Num_Cars+Num_Acc_cars+Num_Avs+Num_Peds));
 
 end
 
@@ -192,7 +192,7 @@ acc_car_port = get_param(acc_name1,'PortHandles');
 %add arrows to connect
 add_line(system_name,Ports_mux.Outport,acc_car_port.Inport(1));
 
-Objects{c} = initialize_acc_car_objs(c,Lanes(mod(c,length(Lanes))+1),(Num_Cars+Num_Acc_cars));
+Objects{c} = initialize_acc_car_objs(c,Lanes(mod(c,length(Lanes))+1),(Num_Cars+Num_Acc_cars+Num_Avs+Num_Peds));
 end
 
 
@@ -201,11 +201,11 @@ end
 % - OMG! Complicated logic :D
 for n = 1:length(Lanes)
    
-    acc_cars_indices = find(Lane_acc == Lanes(n))
-    cars_indices = find(Lane_car == Lanes(n))
+    acc_cars_indices = find(Lane_acc == Lanes(n));
+    cars_indices = find(Lane_car == Lanes(n));
     counter_1 = 1;
     
-    total_inputs_mux = (length(acc_cars_indices)+length(cars_indices))*2
+    total_inputs_mux = (length(acc_cars_indices)+length(cars_indices))*2;
     
     for j = 1:length(acc_cars_indices)
         set_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(acc_cars_indices(j)+Num_avs_relative)),'Inputs',string(total_inputs_mux));
@@ -225,7 +225,7 @@ for n = 1:length(Lanes)
                 add_line(system_name,ph_car.Outport(2),mux_ph(j2).Inport(counter_1+1));
             end
             
-            counter_1 = counter_1+2
+            counter_1 = counter_1+2;
 
         end
     end
@@ -243,7 +243,7 @@ for n = 1:length(Lanes)
                 add_line(system_name,ph_acc_car.Outport(2),mux_ph(j4).Inport(counter_2+1));
             end
             
-            counter_2 = counter_2+2
+            counter_2 = counter_2+2;
             
         end
     end
@@ -259,7 +259,7 @@ toc()
 
 tic()
 %Start the system / Simulate the system
-output = sim(system_name,100)
+output = sim(system_name,10)
 toc();
 
 
