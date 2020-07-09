@@ -33,24 +33,24 @@ def start2():
     matlab_string1 = ' -nodisplay'
     matlab_string2 = ' -nosplash'
     matlab_string3 = ' -r'
-    matlab_string4 = 'try LargeScaleSim('+str(sys.argv[1])+','+str(sys.argv[2])+','+str(sys.argv[3])+','+str(sys.argv[4])+');catch;end;quit;'
+    matlab_string4 = 'try LargeScaleSim('+str(sys.argv[1])+','+str(sys.argv[2])+','+str(sys.argv[3])+','+str(sys.argv[4])+');catch;end;quit force;'
     print(matlab_string)
     print(matlab_string1)
     print(matlab_string2)
     print(matlab_string3)
     print(matlab_string4)
     #print(''.join(matlab_string))
-    matlabprc1 = subprocess.Popen(['./../../../../../../usr/local/MATLAB/R2019b/bin/matlab','-nodisplay','-nosplash','-r',matlab_string4])
+    matlabprc1 = subprocess.call(['./../../../../../../usr/local/MATLAB/R2019b/bin/matlab','-nodisplay','-nosplash','-r',matlab_string4])
 
     #matlabprc1 = subprocess.Popen([matlab_string,matlab_string1,matlab_string2,matlab_string3,matlab_string4])
-    print(matlabprc1.pid)
+    #print(matlabprc1.pid)
     #print(" stdout data : ",matlabprc1.communicate()[0])
     #string_command = 'strace -ewrite -p '+str(matlabprc1.pid)+' -s 500'
     #stream_line = os.popen(string_command)
 
     t_end = time.time() + 60
     
-    time.sleep(int(sys.argv[5]))
+    #time.sleep(int(sys.argv[5]))
     #matlabprc1.terminate()
 
 if __name__ =="__main__":
