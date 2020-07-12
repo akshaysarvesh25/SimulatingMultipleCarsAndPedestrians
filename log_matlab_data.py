@@ -7,10 +7,12 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from datetime import datetime
 
-def start_1(num_cars,num_peds,num_avs,num_acc_cars,time_taken):
 
-    print('Starting Simulation for ',num_cars,' cars , ',num_peds,' pedestrains , ',num_avs,' AVs , ',num_acc_cars,' Cruise control cars; allowed sim time is : ',time_taken)
+def start_1(num_cars,num_peds,num_avs,num_acc_cars):
+
+    print('Starting Simulation for ',num_cars,' cars , ',num_peds,' pedestrains , ',num_avs,' AVs , ',num_acc_cars,' Cruise control cars;')
 
     if os.path.isfile("memory_consumed.txt"):
         os.remove("memory_consumed.txt")
@@ -22,7 +24,7 @@ def start_1(num_cars,num_peds,num_avs,num_acc_cars,time_taken):
     if os.path.isfile("output.txt"):
         os.remove("output.txt")
     with open("output.txt", "w+") as output:
-        subprocess.call(["python3", "./memory_analyzer.py",str(num_cars),str(num_peds),str(num_avs),str(num_acc_cars),str(time_taken)], stdout=output);
+        subprocess.call(["python3", "./memory_analyzer.py",str(num_cars),str(num_peds),str(num_avs),str(num_acc_cars)], stdout=output);
     
     print("Done writing data")
     time.sleep(10)
@@ -104,7 +106,7 @@ def auto_start_sim():
     weightedN = []
     for param in sim_params:
         print(param)
-        sim_mem_tmp,sim_time_tmp,sim_nedges_temp = start_1(param[0],param[1],param[2],param[3],param[4])
+        sim_mem_tmp,sim_time_tmp,sim_nedges_temp = start_1(param[0],param[1],param[2],param[3])
         sim_mem.append(sim_mem_tmp)
         sim_time.append(sim_time_tmp)
         weightedEbyN_temp,weightedN_temp = getWeightedNandEbyN(param,sim_nedges_temp)
@@ -116,8 +118,31 @@ def auto_start_sim():
     print(weightedEbyN)
     print(weightedN)
 
+    print("Logging data now")
+    data_logger(sim_mem,sim_time,weightedEbyN,weightedN)
+
     print("Plotting now")
     threeD_plot(sim_mem,sim_time,weightedEbyN,weightedN)
+
+def log2textfile(data,nametxtfile):
+    file_open = open(str(str(nametxtfile)),"a")
+    file_open.write(str(data))
+    file_open.close()
+
+
+def data_logger(memory_,time_,wEbyN,wN):
+    date_ = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
+    directory = str('log_')+str(date_)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    #log memory
+    log2textfile(memory_,(str(directory)+'/'+('memory_.txt')))
+    #log time
+    log2textfile(time_,(str(directory)+'/'+('time_.txt')))
+    #log weighted EbyN
+    log2textfile(wEbyN,(str(directory)+'/'+('weighted_EbyN.txt')))
+    #log weighted N
+    log2textfile(wN,(str(directory)+'/'+('weighted_N.txt')))
 
 
 if __name__=="__main__":
