@@ -33,7 +33,7 @@ else
 end
 
 %%%%Create cars%%%
-add_car = 'LargeScaleSimLib/car';
+add_car = 'LargeScaleSimLib_old/car';
 car_name = 'MultipleCarsPedestrians/Car';
 lane_counter_car = 1;
 for c = 1:Num_Cars
@@ -85,7 +85,7 @@ end
 Num_Peds_relative = Num_Peds + Num_Cars;
 
 %%%%Create Pedestrians%%%
-add_ped = 'LargeScaleSimLib/ped1';
+add_ped = 'LargeScaleSimLib_old/ped1';
 ped_name = 'MultipleCarsPedestrians/ped';
 for c = Num_Cars+1:Num_Peds_relative
 
@@ -124,7 +124,7 @@ end
 Num_avs_relative = Num_Peds_relative+Num_Avs;
 
 %%%%Create Avs%%%
-add_av = 'LargeScaleSimLib/av_simple';
+add_av = 'LargeScaleSimLib_old/av_simple';
 av_name = 'MultipleCarsPedestrians/av';
 for c = Num_Peds_relative+1:Num_avs_relative
 
@@ -168,7 +168,7 @@ end
 Num_acc_cars_relative = Num_avs_relative + Num_Acc_cars;
 
 %%%%Create Acc cars%%%
-add_acc = 'LargeScaleSimLib/car_acc';
+add_acc = 'LargeScaleSimLib_old/car_acc';
 acc_name = 'MultipleCarsPedestrians/car_acc';
 lane_counter_acc = 1;
 for c = Num_avs_relative+1:Num_acc_cars_relative
