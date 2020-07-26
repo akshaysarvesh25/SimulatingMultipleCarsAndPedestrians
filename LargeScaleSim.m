@@ -281,7 +281,7 @@ for lane_ = 1:length(Lanes)
     
     for node_ = 1:length(acc_cars_indices)
         
-        if(node_ == 1 && lane_ == 1)
+        if(node_ == 1 || lane_ == 1)
             G = digraph([acc_cars_indices(acc_cars_indices~=acc_cars_indices(node_)) cars_indices],acc_cars_indices(node_));
         
         else
