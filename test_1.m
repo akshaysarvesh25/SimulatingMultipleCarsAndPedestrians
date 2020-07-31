@@ -15,10 +15,10 @@ system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
 
-Num_Cars = 3;
+Num_Cars = 6;
 Num_Peds = 1;
 Num_Avs = 1;
-Num_Acc_cars = 1;
+Num_Acc_cars = 3;
 
 % 
 % Num_Cars = num_cars;
@@ -281,15 +281,30 @@ end
 % - OMG! Complicated logic :D
 for n = 1:length(Lanes)
    
-    acc_cars_indices = find(Lane_acc == Lanes(n));
-    cars_indices = find(Lane_car == Lanes(n));
+    acc_cars_indices = find(Lane_acc == Lanes(n))
+    cars_indices = find(Lane_car == Lanes(n))
     counter_1 = 1;
     
+    car_index = [cars_indices acc_cars_indices]
+    
     total_inputs_mux = (length(acc_cars_indices)+length(cars_indices))*2;
+    
     
     for j = 1:length(acc_cars_indices)
         set_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(acc_cars_indices(j)+Num_avs_relative)),'Inputs',string(total_inputs_mux));
         mux_ph(j) = get_param(strcat('MultipleCarsPedestrians/acc_car_mux_',string(acc_cars_indices(j)+Num_avs_relative)),'PortHandles');
+    end
+    
+        %Add the subscribers depending on the number of muxes for cars
+    for count1 = 1:(length(cars_indices))
+        add_block('robotlib/Subscribe',strcat('MultipleCarsPedestrians/Sub_',string(cars_indices(count1))));
+        set_param(strcat('MultipleCarsPedestrians/Sub_',string(cars_indices(count1))),'topic',strcat(topic_prefix_name,string(cars_indices(count1))));
+    end
+    
+        %Add the subscribers depending on the number of muxes for cars
+    for count1 = 1:(length(acc_cars_indices))
+        add_block('robotlib/Subscribe',strcat('MultipleCarsPedestrians/Sub_',string(acc_cars_indices(count1)+Num_avs_relative)));
+        set_param(strcat('MultipleCarsPedestrians/Sub_',string(acc_cars_indices(count1)+Num_avs_relative)),'topic',strcat(topic_prefix_name,string(acc_cars_indices(count1)+Num_avs_relative)));
     end
     
     %If there are more than one normal car in the lane
