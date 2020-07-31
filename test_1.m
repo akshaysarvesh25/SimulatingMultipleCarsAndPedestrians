@@ -317,41 +317,41 @@ for n = 1:length(Lanes)
         set_param(strcat('MultipleCarsPedestrians/BusSel_',string(acc_cars_indices(count1)+Num_avs_relative)),'OutputSignals','X,Y');
     end
     
-    %If there are more than one normal car in the lane
-%     if(length(cars_indices)>0)
-%         counter_1 = 1;
-%         for j1 = 1:length(cars_indices)
-%             ph_car = get_param(strcat('MultipleCarsPedestrians/Car',string(cars_indices(j1))),'PortHandles');
-% 
-% 
-% 
-%             for j2 = 1:length(acc_cars_indices)
-%                 add_line(system_name,ph_car.Outport(1),mux_ph(j2).Inport(counter_1));
-%                 add_line(system_name,ph_car.Outport(2),mux_ph(j2).Inport(counter_1+1));
-%             end
-%             
-%             counter_1 = counter_1+2;
-% 
-%         end
-%     end
-%     
-%     temp = counter_1;
-%     
-%     %If there are more than one acc car in the lane
-%     if(length(acc_cars_indices)>0)
-%         counter_2 = temp;
-%         for j3 = 1:length(acc_cars_indices)
-%             ph_acc_car = get_param(strcat('MultipleCarsPedestrians/car_acc',string(acc_cars_indices(j3))),'PortHandles');
-%             
-%             for j4 = 1:length(acc_cars_indices)
-%                 add_line(system_name,ph_acc_car.Outport(1),mux_ph(j4).Inport(counter_2));
-%                 add_line(system_name,ph_acc_car.Outport(2),mux_ph(j4).Inport(counter_2+1));
-%             end
-%             
-%             counter_2 = counter_2+2;
-%             
-%         end
-%     end
+%If there are more than one normal car in the lane
+    if(length(cars_indices)>0)
+        counter_1 = 1;
+        for j1 = 1:length(cars_indices)
+            ph_car = get_param(strcat('MultipleCarsPedestrians/BusSel_',string(cars_indices(j1))),'PortHandles');
+
+
+
+            for j2 = 1:length(acc_cars_indices)
+                add_line(system_name,ph_car.Outport(1),mux_ph(j2).Inport(counter_1));
+                add_line(system_name,ph_car.Outport(2),mux_ph(j2).Inport(counter_1+1));
+            end
+            
+            counter_1 = counter_1+2;
+
+        end
+    end
+    
+    temp = counter_1;
+    
+    %If there are more than one acc car in the lane
+    if(length(acc_cars_indices)>0)
+        counter_2 = temp;
+        for j3 = 1:length(acc_cars_indices)
+            ph_acc_car = get_param(strcat('MultipleCarsPedestrians/BusSel_',string(acc_cars_indices(j3)+Num_avs_relative)),'PortHandles');
+            
+            for j4 = 1:length(acc_cars_indices)
+                add_line(system_name,ph_acc_car.Outport(1),mux_ph(j4).Inport(counter_2));
+                add_line(system_name,ph_acc_car.Outport(2),mux_ph(j4).Inport(counter_2+1));
+            end
+            
+            counter_2 = counter_2+2;
+            
+        end
+    end
     
     
 end
