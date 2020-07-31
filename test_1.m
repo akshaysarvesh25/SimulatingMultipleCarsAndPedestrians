@@ -299,12 +299,22 @@ for n = 1:length(Lanes)
     for count1 = 1:(length(cars_indices))
         add_block('robotlib/Subscribe',strcat('MultipleCarsPedestrians/Sub_',string(cars_indices(count1))));
         set_param(strcat('MultipleCarsPedestrians/Sub_',string(cars_indices(count1))),'topic',strcat(topic_prefix_name,string(cars_indices(count1))));
+        add_block('simulink/Commonly Used Blocks/Bus Selector', strcat('MultipleCarsPedestrians/BusSel_',string(cars_indices(count1))));
+        BusSel = get_param(strcat('MultipleCarsPedestrians/BusSel_',string(cars_indices(count1))),'PortHandles');
+        Sub_ports = get_param(strcat('MultipleCarsPedestrians/Sub_',string(cars_indices(count1))),'PortHandles');
+        add_line(system_name,Sub_ports.Outport(2),BusSel.Inport);
+        set_param(strcat('MultipleCarsPedestrians/BusSel_',string(cars_indices(count1))),'OutputSignals','X,Y');
     end
     
         %Add the subscribers depending on the number of muxes for cars
     for count1 = 1:(length(acc_cars_indices))
         add_block('robotlib/Subscribe',strcat('MultipleCarsPedestrians/Sub_',string(acc_cars_indices(count1)+Num_avs_relative)));
         set_param(strcat('MultipleCarsPedestrians/Sub_',string(acc_cars_indices(count1)+Num_avs_relative)),'topic',strcat(topic_prefix_name,string(acc_cars_indices(count1)+Num_avs_relative)));
+        add_block('simulink/Commonly Used Blocks/Bus Selector', strcat('MultipleCarsPedestrians/BusSel_',string(acc_cars_indices(count1)+Num_avs_relative)));
+        BusSel = get_param(strcat('MultipleCarsPedestrians/BusSel_',string(acc_cars_indices(count1)+Num_avs_relative)),'PortHandles');
+        Sub_ports = get_param(strcat('MultipleCarsPedestrians/Sub_',string(acc_cars_indices(count1)+Num_avs_relative)),'PortHandles');
+        add_line(system_name,Sub_ports.Outport(2),BusSel.Inport);
+        set_param(strcat('MultipleCarsPedestrians/BusSel_',string(acc_cars_indices(count1)+Num_avs_relative)),'OutputSignals','X,Y');
     end
     
     %If there are more than one normal car in the lane
