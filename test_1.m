@@ -9,16 +9,16 @@ clc;clear all;close all;
 clc;clear all;close all;
 
 %LargeScaleSimPartions(1,1,1,1);
-
+delete_stuff;
 open_system(new_system('MultipleCarsPedestrians'));
 system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
 
-Num_Cars = 6;
+Num_Cars = 2;
 Num_Peds = 1;
 Num_Avs = 1;
-Num_Acc_cars = 3;
+Num_Acc_cars = 1;
 
 % 
 % Num_Cars = num_cars;
@@ -281,11 +281,11 @@ end
 % - OMG! Complicated logic :D
 for n = 1:length(Lanes)
    
-    acc_cars_indices = find(Lane_acc == Lanes(n))
-    cars_indices = find(Lane_car == Lanes(n))
+    acc_cars_indices = find(Lane_acc == Lanes(n));
+    cars_indices = find(Lane_car == Lanes(n));
     counter_1 = 1;
     
-    car_index = [cars_indices acc_cars_indices]
+    car_index = [cars_indices acc_cars_indices];
     
     total_inputs_mux = (length(acc_cars_indices)+length(cars_indices))*2;
     
@@ -356,33 +356,40 @@ for n = 1:length(Lanes)
     
 end
 
-options = simset('SrcWorkspace','current');
+%options = simset('SrcWorkspace','current');
 
-% toc()
-%%%Done creating the system
-% warning('off')
-% %sim(system_name,0.01,options);
-% 
-% tstart = tic();
-% %Start the system / Simulate the system
-% %output1 = sim(system_name,100,options);
-% time_elapsed = toc(tstart);
-% fprintf('\n\nTime elapsed = %f',time_elapsed);
+%%Done creating the system
+warning('off')
+%sim(system_name,0.01,options);
+
+tstart = tic();
+%Start the system / Simulate the system
+%output1 = sim(system_name,100,options);
+time_elapsed = toc(tstart);
+fprintf('\n\nTime elapsed = %f',time_elapsed);
 
 
+%Simulink.SubSystem.copyContentsToBlockDiagram('MultipleCarsPedestrians/BA_3', partition_2);
 
 for lane_ = 1:length(Lanes)
    
     acc_cars_indices = find(Lane_acc == Lanes(lane_))+Num_avs_relative;
     cars_indices = find(Lane_car == Lanes(lane_));
     
+    
     for node_ = 1:length(acc_cars_indices)
         
-        if(node_ == 1 || lane_ == 1)
+        if(node_ == 1 && lane_ == 1)
             G = digraph([acc_cars_indices(acc_cars_indices~=acc_cars_indices(node_)) cars_indices],acc_cars_indices(node_));
         
         else
-            G = addedge(G,[acc_cars_indices(acc_cars_indices~=acc_cars_indices(node_)) cars_indices],acc_cars_indices(node_));
+            if exist('G')
+                G = addedge(G,[acc_cars_indices(acc_cars_indices~=acc_cars_indices(node_)) cars_indices],acc_cars_indices(node_));
+            else
+                G = digraph();
+                G = addedge(G,[acc_cars_indices(acc_cars_indices~=acc_cars_indices(node_)) cars_indices],acc_cars_indices(node_));
+            end
+            
         end
         
         
@@ -392,12 +399,95 @@ for lane_ = 1:length(Lanes)
     
 end
 
-%figure
-%plot(G)
-%title('Simulation graph')
-fprintf('\n\nNumber of edges in the graph = %f',numedges(G));
 
-%output_return = time_elapsed;
+
+
+close_system(system_name,1);
+command_ = 'cp MultipleCarsPedestrians.slx Partition2.slx';
+[status,cmdout] = system(command_);
+open_system('Partition2.slx');
+open_system('MultipleCarsPedestrians.slx');
+
+%delete_block('Partition2/Car1');
+
+
+
+%Assign partitions to the car
+%Ways of doing it : 
+%1. Pick randomly`
+%2. Pick in a fixed order
+list_choose = 1:1:(Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars);
+part1_index = list_choose(2:2:end)
+part2_index = list_choose(1:2:end)
+
+list_cars = 1:1:Num_Cars;
+list_peds = 1:1:Num_Peds;
+list_avs = 1:1:Num_Avs;
+list_acc_cars = 1:1:Num_Acc_cars;
+list_ = [list_cars list_peds list_avs list_acc_cars];
+part1 = list_(2:2:end)
+part2 = list_(1:2:end)
+
+
+%Create partition 1
+system_name2 = 'Partition2';
+for i = 1:length(part1_index)
+    if(part1_index(i)<=Num_Cars)
+        veh_string = '/Car';
+        i;
+        part1_index(i);
+        part1(i);
+        delete_block(strcat(system_name,veh_string,string(part1(i))));        
+    elseif(Num_Cars < part1_index(i) && part1_index(i)<=(Num_Cars+ Num_Peds))
+        veh_string = '/ped';
+        i;
+        part1_index(i);
+        part1(i);
+        delete_block(strcat(system_name,veh_string,string(part1(i))));         
+    elseif((Num_Cars+Num_Peds) < part1_index(i) && part1_index(i)<= (Num_Cars+Num_Peds+Num_Avs))
+        veh_string = '/av';
+        delete_block(strcat(system_name,veh_string,string(part1(i))));         
+    else
+        veh_string = '/car_acc';
+        delete_block(strcat(system_name,veh_string,string(part1(i))));
+    end
+      
+    
+end
+
+
+%Create partition 2
+for i = 1:length(part2_index)
+    if(part2_index(i)<=Num_Cars)
+        veh_string = '/Car';
+        i;
+        part2_index(i);
+        part2(i);
+        delete_block(strcat(system_name2,veh_string,string(part2(i))));        
+    elseif(Num_Cars < part2_index(i) && part2_index(i)<=(Num_Cars+ Num_Peds))
+        veh_string = '/ped';
+        i;
+        part2_index(i);
+        part2(i);
+        delete_block(strcat(system_name2,veh_string,string(part2(i))));         
+    elseif((Num_Cars+Num_Peds) < part2_index(i) && part2_index(i)<= (Num_Cars+Num_Peds+Num_Avs))
+        veh_string = '/av';
+        delete_block(strcat(system_name2,veh_string,string(part2(i))));         
+    else
+        veh_string = '/car_acc';
+        delete_block(strcat(system_name2,veh_string,string(part2(i))));
+    end
+      
+    
+end
+
+figure
+h = plot(G)
+highlight(h,part2_index,'NodeColor','g')
+title('Simulation graph')
+fprintf('\n\nNumber of edges in the graph = %f',numedges(G));
+% 
+% output_return = time_elapsed;
 % %Plotting routine XY plot
 % car_string = 'output.Car';
 % x_data_string = '.Data(:,1)';
@@ -558,5 +648,5 @@ fprintf('\n\nNumber of edges in the graph = %f',numedges(G));
 %   
 % end
 % %%%End Vy plot
-% 
-% op = car_string;
+
+%op = car_string;
