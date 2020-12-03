@@ -279,13 +279,20 @@ for lane_ = 1:length(Lanes)
     acc_cars_indices = find(Lane_acc == Lanes(lane_))+Num_avs_relative;
     cars_indices = find(Lane_car == Lanes(lane_));
     
+    
     for node_ = 1:length(acc_cars_indices)
         
-        if(node_ == 1 || lane_ == 1)
+        if(node_ == 1 && lane_ == 1)
             G = digraph([acc_cars_indices(acc_cars_indices~=acc_cars_indices(node_)) cars_indices],acc_cars_indices(node_));
         
         else
-            G = addedge(G,[acc_cars_indices(acc_cars_indices~=acc_cars_indices(node_)) cars_indices],acc_cars_indices(node_));
+            if exist('G')
+                G = addedge(G,[acc_cars_indices(acc_cars_indices~=acc_cars_indices(node_)) cars_indices],acc_cars_indices(node_));
+            else
+                G = digraph();
+                G = addedge(G,[acc_cars_indices(acc_cars_indices~=acc_cars_indices(node_)) cars_indices],acc_cars_indices(node_));
+            end
+            
         end
         
         
@@ -295,11 +302,11 @@ for lane_ = 1:length(Lanes)
     
 end
 
-%figure
-%plot(G)
-%title('Simulation graph')
+figure
+plot(G)
+title('Simulation graph')
 fprintf('\n\nNumber of edges in the graph = %f',numedges(G));
-
+assignin('base', 'Objects', Objects);
 output_return = time_elapsed;
 % %Plotting routine XY plot
 % car_string = 'output.Car';
@@ -433,7 +440,7 @@ output_return = time_elapsed;
 % 
 % %Plotting routine Vy plot
 % car_string = 'output.Car';
-% data_string = '.Data(:,4)';
+%data_string = '.Data(:,4)';
 % time_string = '.Time(:,1)';
 % figure;
 % for plot_count = 1:(Num_Cars)
