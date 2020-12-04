@@ -1,4 +1,4 @@
-clc;clear all;close all;
+%clc;clear all;close all;
 
 % 
 % open_system(new_system('Test'));
@@ -6,25 +6,25 @@ clc;clear all;close all;
 % %load_system('robotics system toolbox')
 % add_block('robotlib/Subscribe','Test/msg_1')
 
-clc;clear all;close all;
-
+%clc;clear all;close all;
+function output_return = LargeScaleSim(num_cars,num_peds,num_avs,num_acc_cars)
 %LargeScaleSimPartions(1,1,1,1);
-delete_stuff;
+%delete_stuff;
 open_system(new_system('MultipleCarsPedestrians'));
 system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
 
-Num_Cars = 2;
-Num_Peds = 1;
-Num_Avs = 1;
-Num_Acc_cars = 1;
+% Num_Cars = 2;
+% Num_Peds = 1;
+% Num_Avs = 1;
+% Num_Acc_cars = 1;
 
 % 
-% Num_Cars = num_cars;
-% Num_Peds = num_peds;
-% Num_Avs = num_avs;
-% Num_Acc_cars = num_acc_cars;
+Num_Cars = num_cars;
+Num_Peds = num_peds;
+Num_Avs = num_avs;
+Num_Acc_cars = num_acc_cars;
 
 %Create lanes depending on the number of vehicles that are present
 if((Num_Cars+Num_Peds+Num_Avs+Num_Acc_cars)/2>25)
@@ -486,8 +486,9 @@ h = plot(G)
 highlight(h,part2_index,'NodeColor','g')
 title('Simulation graph')
 fprintf('\n\nNumber of edges in the graph = %f',numedges(G));
+%output_return;
 % 
-% output_return = time_elapsed;
+ output_return = time_elapsed;
 % %Plotting routine XY plot
 % car_string = 'output.Car';
 % x_data_string = '.Data(:,1)';
