@@ -14,6 +14,7 @@ open_system(new_system('MultipleCarsPedestrians'));
 system_name = 'MultipleCarsPedestrians';
 
 object_name = 'Objects{';
+sim_number = 2;
 
 % Num_Cars = 2;
 % Num_Peds = 1;
@@ -42,7 +43,8 @@ end
 %%%%Create cars%%%
 add_car = 'LargeScaleSimLib_old/car';
 car_name = 'MultipleCarsPedestrians/Car';
-topic_prefix_name = '/Data_Pub_';
+%topic_prefix_name = '/Data_Pub_';
+topic_prefix_name = strcat('/Data_Pub_',string(sim_number));
 lane_counter_car = 1;
 for c = 1:Num_Cars
 
@@ -488,6 +490,8 @@ title('Simulation graph')
 fprintf('\n\nNumber of edges in the graph = %f',numedges(G));
 %output_return;
 % 
+close_system(system_name,0);
+close_system(system_name,0);
  output_return = time_elapsed;
 % %Plotting routine XY plot
 % car_string = 'output.Car';
